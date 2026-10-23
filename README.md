@@ -47,6 +47,7 @@ code/
     metrics.py, metrics_paper.py  all paper metrics (pairwise accuracy, joint hit rate, ...)
     metrics-paper.sh              per-session tables / CSV used for the paper
     metrics-cross-transfer.sh     held-out results per model per iteration
+    cve_year.py                   PrimeVul pairwise accuracy by CVE year (contamination check)
     harness_quality/, harness_quality_paper.py, harness-quality-paper.sh   the judge
   scripts/harness_quality_{openrouter,codex}_judge.py   judge backends
 ```
@@ -187,6 +188,12 @@ uv run ./evaluation/metrics-paper.sh 20260919_204729 --csv out.csv
 These work the same inside the Docker shell.
 
 Held-out scores use 430 PrimeVul pairs: 5 pairs that also appear in the validation set are left out (`HELD_EXCLUDE_PAIRS` in `metrics_paper.py`). A pair with a missing verdict counts as wrong and stays in the denominator. Set `METRICS_EXTRA_ROOTS` (colon-separated `meta-vul-code` dirs) to also read runs from other checkouts.
+
+The contamination check groups the same 430 pairs by the CVE year of the vulnerable function and tests for a trend (Spearman correlation between year and pair correctness, permutation p-value, with and without 2022). It covers the held-out runs in `results/` (92 runs across the four sessions; the Opus seed baselines are not included) and writes `results/cve_year/report.md`, `summary.csv` and `per_year.csv`:
+
+```bash
+uv run python evaluation/cve_year.py
+```
 
 ## Harness quality (RQ3)
 
